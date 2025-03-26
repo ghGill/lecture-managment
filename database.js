@@ -34,6 +34,21 @@ class Database {
         })
     }
 
+    async removeDatabase() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.db.dropDatabase();
+    
+                console.log(`Database was removed.`);
+
+                resolve(true);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
     async createCollection(collectionName) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -49,12 +64,27 @@ class Database {
         })
     }
 
+    async removeCollection(collectionName) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.db.dropCollection(collectionName);
+    
+                console.log(`Collection ${collectionName} was removed.`);
+
+                resolve(true);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
     async createIndex(collectionName, indexField, order=1) {
         return new Promise(async (resolve, reject) => {
             try {
                 let query = {};
                 query[indexField] = order;
-                const collection = this.db.collection(collectionName).createIndex(query);
+                this.db.collection(collectionName).createIndex(query);
     
                 console.log(`Index ${indexField} for collection ${collectionName} was created.`);
 
@@ -66,7 +96,22 @@ class Database {
         })
     }
 
-    async getAllDocuments(collectionName) {
+    async removeIndex(collectionName, indexField) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                this.db.collection(collectionName).dropIndex(indexField);
+    
+                console.log(`Index ${indexField} for collection ${collectionName} was removed.`);
+
+                resolve(true);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
+    async fetchAllDocuments(collectionName) {
         return new Promise(async (resolve, reject) => {
             try {
                 const result = this.db.collection(collectionName).find({}).toArray();

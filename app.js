@@ -23,14 +23,26 @@ async function createCollectionWithData(collectionName, qty, indexField="", orde
     await db.insertLecturesBulkData(collectionName, qty);
 }
 
-async function getAllDocuments(collectionName) {
+async function runUnitTest() {
+    await db.removeCollection("lectures");
+
+    await createCollectionWithData("lectures", 2000);
+
     let t1 = Date.now();
-
-    const qq = await db.getAllDocuments(collectionName);
-    console.log(qq.length);
-
+    await db.fetchAllDocuments("lectures");
     let t2 = Date.now();
-    console.log(`Process time: ${(t2 - t1) / 1000}`);
+    console.log(`Fetch data without index took ... ${t2 - t1}ms.`);
+
+    // create collection with index
+    await db.createIndex("lectures", "subject", 1);
+
+    t1 = Date.now();
+    await db.fetchAllDocuments("lectures");
+    t2 = Date.now();
+    console.log(`Fetch data with index took ... ${t2 - t1}ms.`);
+
+    // delete index
+    await db.removeIndex("lectures", "subject_1");
 }
 
 app.listen(APP_PORT, async () => {
@@ -40,11 +52,10 @@ app.listen(APP_PORT, async () => {
     try {
         await db.connect();
         await db.createDatabase("lecturesDB");
-        // await createCollectionWithData("lectures", 2000);
-        // await createCollectionWithData("lectures2", 2000, "subject");
 
-        // await getAllDocuments("lectures");
-        // await getAllDocuments("lectures2");
+        // await createCollectionWithData("lectures", 2000);
+
+        await runUnitTest();
     }
     catch(e) {
         console.log(e);
