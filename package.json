@@ -1,0 +1,14 @@
+{
+  "name": "lecture-api",
+  "version": "1.0.0",
+  "description": "Lecture API with Swagger documentation",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0"
+  }
+} 
