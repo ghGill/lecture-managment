@@ -1,9 +1,10 @@
 const express = require("express");
 const swaggerUi = require('swagger-ui-express');
 const specs = require('./swagger');
-const { APP_PORT } = require("./app-config");
 const lectureRouter = require("./routes/lecture");
+const userRouter = require("./routes/user");
 const {db} = require("./database");
+const dotenv = require('dotenv');
 
 const app = express()
 app.use(express.json())
@@ -12,21 +13,26 @@ app.use(express.json())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use('/lecture', lectureRouter)
+app.use('/user', userRouter)
 
-async function createCollectionWithData(collectionName, qty, indexField="", order=1) {
+app.get('/_/health_check', async (req, res) => {
+    res.status(200).json("healthy")
+})
+
+async function createCollectionWithData(collectionName, bulkInsertFunction, qty, indexField="", order=1) {
     await db.createCollection(collectionName);
 
     if (indexField != "") {
         await db.createIndex(collectionName, indexField, order);
     }
 
-    await db.insertLecturesBulkData(collectionName, qty);
+    await db[bulkInsertFunction](collectionName, qty);
 }
 
 async function runUnitTest() {
     await db.removeCollection("lectures");
 
-    await createCollectionWithData("lectures", 2000);
+    await createCollectionWithData("lectures", "insertLecturesBulkData", 2000);
 
     let t1 = Date.now();
     await db.fetchAllDocuments("lectures");
@@ -45,17 +51,21 @@ async function runUnitTest() {
     await db.removeIndex("lectures", "subject_1");
 }
 
-app.listen(APP_PORT, async () => {
-    console.log(`running on port ${APP_PORT}`);
-    console.log(`Swagger documentation available at http://localhost:${APP_PORT}/api-docs`);
+dotenv.config();
+const {PORT} = process.env;
 
+app.listen(PORT, async () => {
     try {
+        console.log(`running on port ${PORT}`);
+        console.log(`Swagger documentation available at http://localhost:${PORT}/api-docs`);
+    
         await db.connect();
         await db.createDatabase("lecturesDB");
 
-        // await createCollectionWithData("lectures", 2000);
+        await createCollectionWithData("lectures", "insertLecturesBulkData", 2000);
+        await createCollectionWithData("users", "insertUsersBulkData", 2000);
 
-        await runUnitTest();
+        // await runUnitTest();
     }
     catch(e) {
         console.log(e);

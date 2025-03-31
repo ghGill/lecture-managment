@@ -4,8 +4,16 @@ const {db} = require("../database");
 
 /**
  * @swagger
+ * tags:
+ *   name: Lectures
+ *   description: Lecture management endpoints
+ */
+
+/**
+ * @swagger
  * /lecture/view/{subject}:
  *   get:
+ *     tags: [Lectures]
  *     summary: Get lectures by subject with pagination
  *     parameters:
  *       - in: path
@@ -29,6 +37,12 @@ const {db} = require("../database");
  *     responses:
  *       200:
  *         description: List of lectures
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Lecture'
  */
 router.get("/view/:subject", async (req, res) => {
     const subject = req.params.subject;
@@ -42,23 +56,14 @@ router.get("/view/:subject", async (req, res) => {
  * @swagger
  * /lecture/add:
  *   post:
+ *     tags: [Lectures]
  *     summary: Add a new lecture
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - subject
- *               - title
- *             properties:
- *               subject:
- *                 type: string
- *               title:
- *                 type: string
- *               description:
- *                 type: string
+ *             $ref: '#/components/schemas/Lecture'
  *     responses:
  *       200:
  *         description: Lecture added successfully
@@ -73,24 +78,14 @@ router.post("/add", (req, res) => {
  * @swagger
  * /lecture/update:
  *   put:
+ *     tags: [Lectures]
  *     summary: Update an existing lecture
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - id
- *             properties:
- *               id:
- *                 type: string
- *               subject:
- *                 type: string
- *               title:
- *                 type: string
- *               description:
- *                 type: string
+ *             $ref: '#/components/schemas/Lecture'
  *     responses:
  *       200:
  *         description: Lecture updated successfully
@@ -105,6 +100,7 @@ router.put("/update", (req, res) => {
  * @swagger
  * /lecture/remove/{id}:
  *   delete:
+ *     tags: [Lectures]
  *     summary: Remove a lecture by ID
  *     parameters:
  *       - in: path

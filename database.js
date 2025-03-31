@@ -1,4 +1,3 @@
-const { DB_URI } = require("./db-config");
 const { MongoClient, ObjectId } = require("mongodb");
 
 class Database {
@@ -8,7 +7,8 @@ class Database {
     async connect() {
         return new Promise(async (resolve, reject) => {
             try {
-                this.client = new MongoClient(DB_URI);
+                const {MONGODB_URI} = process.env;
+                this.client = new MongoClient(MONGODB_URI);
                 await this.client.connect();
     
                 resolve(true);
@@ -124,6 +124,8 @@ class Database {
         })
     }
 
+    // ************* LECTURES ****************************
+
     async insertLecturesBulkData(collctionName, n) {
         return new Promise(async (resolve, reject) => {
             try {
@@ -209,6 +211,115 @@ class Database {
                 let doc_id = new ObjectId(id);
                 await this.db.collection("lectures").deleteOne(
                     {_id:doc_id},
+                );
+
+                resolve(true);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
+    // ************* USERS ****************************
+
+    async getUsers(page=1, rows=50) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const firstDocument = (page-1) * rows;
+                const data = await this.db.collection("users").find({}).skip(firstDocument).limit(parseInt(rows)).toArray();
+            
+                resolve(data);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
+    async insertUsersBulkData(collctionName, n) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const roles = ["Admin", "Developer", "QA"];
+            
+                let bulkData = [];
+            
+                for (let i=0; i<n; i++) {
+                    let data = {
+                        "name": `User${i}`,
+                        "email": `user${i}@gmail.com`,
+                        "age": Math.floor(Math.random() * 30) + 20,
+                        "role": roles[Math.floor(Math.random() * roles.length)]
+                    };
+
+                    bulkData.push(data);
+                }
+
+                await this.db.collection(collctionName).insertMany(bulkData);
+
+                console.log(`Insert data into collection ${collctionName} complete.`);
+
+                resolve(true);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
+    async getUser(id) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let user_id = new ObjectId(id);
+                const data = await this.db.collection("users").find({_id:user_id}).toArray();
+            
+                resolve(data);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
+    async addUser(data) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const result = await this.db.collection("users").insertOne(data);
+            
+                resolve(true);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
+    async updateUser(data) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const {_id} = data;
+                delete data._id;
+
+                let user_id = new ObjectId(_id);
+                await this.db.collection("users").updateOne(
+                    {_id:user_id},
+                    {$set:data}
+                );
+
+                resolve(true);
+            }
+            catch (e) {
+                reject(e);
+            }
+        })
+    }
+
+    async removeUser(id) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let user_id = new ObjectId(id);
+                await this.db.collection("users").deleteOne(
+                    {_id:user_id},
                 );
 
                 resolve(true);
