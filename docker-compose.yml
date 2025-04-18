@@ -8,18 +8,30 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - mongo
+      - redis
     ports:
       - "3000:3000"
     environment:
+      # - NODE_ENV=production
       - MONGODB_URI=mongodb://mongo:27017
+      - REDISDB_URI=redis://redis:6379
 
   mongo:
     image: mongo:latest
     container_name: mongo
     ports:
       - "27017:27017"
-    # volumes:
-      # - mongo-data:/data/db
+    volumes:
+      - mongo-data:/data/db
 
-# volumes:
-  # mongo-data:
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mongo-data:
+  redis-data:

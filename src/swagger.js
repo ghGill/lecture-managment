@@ -1,4 +1,5 @@
 const swaggerJsdoc = require('swagger-jsdoc');
+const path = require('path');
 
 const options = {
   definition: {
@@ -14,17 +15,15 @@ const options = {
         description: 'Development server',
       },
     ],
-    tags: [
-      {
-        name: 'Lectures',
-        description: 'Lecture management endpoints',
-      },
-      {
-        name: 'Users',
-        description: 'User management endpoints',
-      },
-    ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+          description: 'Enter your JWT token in the format: Bearer <token>'
+        }
+      },
       schemas: {
         Lecture: {
           type: 'object',
@@ -67,12 +66,37 @@ const options = {
               type: 'string',
               description: 'Role of the user',
             },
+            password: {
+              type: 'string',
+              description: 'User password (only for registration/login)',
+            },
           },
         },
       },
     },
+    security: [{
+      bearerAuth: []
+    }],
+    tags: [
+      {
+        name: 'Lectures',
+        description: 'Lecture management endpoints',
+      },
+      {
+        name: 'Users',
+        description: 'User management endpoints',
+      },
+      {
+        name: 'Authentications',
+        description: 'Authentication management endpoints',
+      },
+      {
+        name: 'Redis',
+        description: 'Redis operations endpoints',
+      },
+    ],
   },
-  apis: ['./routes/*.js'], // Path to the API routes
+  apis: [path.join(__dirname, './routes/*.js')], // Use absolute path to route files
 };
 
 const specs = swaggerJsdoc(options);

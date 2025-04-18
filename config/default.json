@@ -1,0 +1,16 @@
+{
+    "app": {
+        "port":"3000"
+    },
+
+    "db": {
+        "host":"mongodb://localhost:",
+        "port": "27017",
+        "name": "lecturesDB"
+    },
+
+    "redis": {
+        "host":"redis://localhost:",
+        "port": "6379"
+    }
+}
