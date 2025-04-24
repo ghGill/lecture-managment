@@ -13,8 +13,9 @@ services:
       - "3000:3000"
     environment:
       # - NODE_ENV=production
-      - MONGODB_URI=mongodb://mongo:27017
-      - REDISDB_URI=redis://redis:6379
+      - MONGO_HOST=mongo
+      - REDIS_HOST=redis
+      - POSTGRES_HOST=postgres
 
   mongo:
     image: mongo:latest
@@ -32,6 +33,26 @@ services:
     volumes:
       - redis-data:/data
 
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: product_db
+    volumes:
+      # - postgres-data:/data
+      - pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+      
 volumes:
   mongo-data:
   redis-data:
+  pgdata:

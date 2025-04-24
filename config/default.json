@@ -4,13 +4,21 @@
     },
 
     "db": {
-        "host":"mongodb://localhost:",
+        "host":"localhost",
         "port": "27017",
         "name": "lecturesDB"
     },
 
     "redis": {
-        "host":"redis://localhost:",
+        "host":"localhost",
         "port": "6379"
+    },
+
+    "pg": {
+        "host":"localhost",
+        "port": "5432",
+        "database":"product_db",
+        "username":"postgres",
+        "password":"postgres123"
     }
 }

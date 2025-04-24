@@ -94,6 +94,10 @@ const options = {
         name: 'Redis',
         description: 'Redis operations endpoints',
       },
+      {
+        name: 'postgres',
+        description: 'Postgres operations endpoints',
+      },
     ],
   },
   apis: [path.join(__dirname, './routes/*.js')], // Use absolute path to route files

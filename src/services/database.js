@@ -3,13 +3,8 @@ const config = require("config");
 
 class Database {
     constructor() {
-        if (this._instance) {
-            return this;
-        }
-
         this.client = null;
         this.db = null;
-        this._instance = this;
 
         this.disableService();
     }
@@ -28,7 +23,8 @@ class Database {
 
     async connect() {
         try {
-            const dbUri = `${config.get("db.host")}${config.get("db.port")}`;
+            const dbHost = process.env.MONGO_HOST || config.get("db.host");
+            const dbUri = `mongodb://${dbHost}:${config.get("db.port")}`;
             this.client = new MongoClient(dbUri);
             await this.client.connect();
 

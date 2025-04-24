@@ -1,5 +1,8 @@
 const express = require("express");
 
+const dotenv = require('dotenv');
+dotenv.config();
+
 const swaggerUi = require('swagger-ui-express');
 const specs = require('./swagger');
 
@@ -7,12 +10,12 @@ const lectureRouter = require("./routes/lecture");
 const userRouter = require("./routes/user");
 const authRouter = require("./routes/auth");
 const redisRouter = require("./routes/redis");
+const pgRouter = require("./routes/postgres");
 
 const {dbInstance} = require("./services/database");
 const {redis} = require("./services/redis");
+const {pg} = require("./services/pg");
 
-const dotenv = require('dotenv');
-dotenv.config();
 
 const config = require('config');
 
@@ -21,6 +24,7 @@ const lectureController = require("./controllers/lecture");
 
 const app = express()
 app.use(express.json())
+app.use(express.text())
 
 // Swagger UI setup
 const swaggerUiOptions = {
@@ -38,6 +42,7 @@ app.use('/lecture', lectureRouter)
 app.use('/user', userRouter)
 app.use('/auth', authRouter)
 app.use('/redis', redisRouter)
+app.use('/pg', pgRouter)
 
 async function allServicesAreRunning() {
     try {
@@ -49,6 +54,11 @@ async function allServicesAreRunning() {
         // Check Redis connection
         if (!redis.isEnable()) {
             return "Redis is not connected";
+        }
+
+        // Check Postgres connection
+        if (!pg.isEnable()) {
+            return "Postgres is not connected";
         }
 
         return true;
@@ -110,6 +120,7 @@ app.listen(appPort, async () => {
         console.log(`running on port ${appPort}`);
         console.log(`Swagger documentation available at http://localhost:${appPort}/api-docs`);
     
+        console.log(await pg.connect());
         console.log(await redis.connect());
         console.log(await dbInstance.connect());
 
@@ -120,6 +131,27 @@ app.listen(appPort, async () => {
             console.log(await lectureController.insertLecturesBulkData("lectures", 2000));
             console.log(await userController.insertUsersBulkData("users", 2000));
             console.log(await userController.addAdminUser());
+
+            // const createTable = `
+            //     create table if not exists test (
+            //         id serial primary key not null,
+            //         name varchar(50) not null,
+            //         price decimal(5,2),
+            //         link varchar(100)
+            //     );
+            // `;
+            // console.log(await pg.execQuery(createTable));
+
+            // const query = `
+            //     insert into test (name, price, link) 
+            //     VALUES
+            //         ('table', 50.0, 'www.table.com'),
+            //         ('chair', 35.80, 'www.chair.com'),
+            //         ('window', 270.0, 'www.window.com'),
+            //         ('sofa', 650.35, 'www.sofa.com')
+            //     ;
+            // `;
+            // console.log(await pg.execQuery(query));
 
             // await runUnitTest();
         }

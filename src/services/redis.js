@@ -21,8 +21,8 @@ class Redis {
 
     async connect(flush=false) {
         try {
-            const redisUri = `${config.get("redis.host")}${config.get("redis.port")}`;
-            console.log(`Connect to redis ${redisUri}`);
+            const redisHost = process.env.REDIS_HOST || config.get("redis.host");
+            const redisUri = `redis://${redisHost}:${config.get("redis.port")}`;
 
             this.client = redis.createClient({
                 url: redisUri
