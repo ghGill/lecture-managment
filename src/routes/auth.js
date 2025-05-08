@@ -4,13 +4,6 @@ const auth = require("../middleware/auth");
 const userController = require("../controllers/user");
 const lectureController = require("../controllers/lecture");
 
-/**
- * @swagger
- * tags:
- *   name: Authentications
- *   description: Authentications management endpoints
- */
-
 // ******************************************* USERS ********************************************************
 
 /**

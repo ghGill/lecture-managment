@@ -95,8 +95,28 @@ const options = {
         description: 'Redis operations endpoints',
       },
       {
-        name: 'postgres',
+        name: 'Postgres',
         description: 'Postgres operations endpoints',
+      },
+      {
+        name: 'Sequelize - Entities CRUD',
+        description: 'CRUD for Lecture or Student operations endpoints',
+      },
+      {
+        name: 'Sequelize - Session',
+        description: 'Sessions operations endpoints',
+      },
+      {
+        name: 'Sequelize - Registraion',
+        description: 'Registration operations endpoints',
+      },
+      {
+        name: 'Sequelize - Advanced',
+        description: 'Advanced operations endpoints',
+      },
+      {
+        name: 'Axios',
+        description: 'Axios api endpoints',
       },
     ],
   },

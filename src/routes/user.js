@@ -4,13 +4,6 @@ const userController = require("../controllers/user");
 
 /**
  * @swagger
- * tags:
- *   name: Users
- *   description: User management endpoints
- */
-
-/**
- * @swagger
  * /user/login:
  *   post:
  *     tags: [Users]

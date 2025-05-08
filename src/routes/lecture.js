@@ -4,13 +4,6 @@ const lectureController = require("../controllers/lecture");
 
 /**
  * @swagger
- * tags:
- *   name: Lectures
- *   description: Lecture management endpoints
- */
-
-/**
- * @swagger
  * /lecture/view/{subject}:
  *   get:
  *     tags: [Lectures]

@@ -4,13 +4,6 @@ const {pg} = require("../services/pg");
 
 /**
  * @swagger
- * tags:
- *   name: Lectures
- *   description: Lecture management endpoints
- */
-
-/**
- * @swagger
  * /pg/query:
  *   post:
  *     tags: [Postgres]

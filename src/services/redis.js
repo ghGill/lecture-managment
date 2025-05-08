@@ -78,12 +78,12 @@ class Redis {
         }
     }
 
-    async put(key, val) {
+    async put(key, val, options={}) {
         if (!this.isEnable())
             return false;
         
         try {
-            this.client.set(key, val);
+            this.client.set(key, val, options);
             console.log(`Key ${key} was added to cache.`);
 
             return true;
@@ -98,7 +98,7 @@ class Redis {
             return false;
         
         try {
-            console.log(`Key ${key} was readed from cache.`)
+            console.log(`Key ${key} fetched from cache.`)
 
             return this.client.get(key);
         }

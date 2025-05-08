@@ -3,6 +3,8 @@ const express = require("express");
 const dotenv = require('dotenv');
 dotenv.config();
 
+const config = require('config');
+
 const swaggerUi = require('swagger-ui-express');
 const specs = require('./swagger');
 
@@ -11,13 +13,15 @@ const userRouter = require("./routes/user");
 const authRouter = require("./routes/auth");
 const redisRouter = require("./routes/redis");
 const pgRouter = require("./routes/postgres");
+const seqRouter = require("./routes/sequelize");
+const axiosRouter = require("./routes/axios");
 
 const {dbInstance} = require("./services/database");
 const {redis} = require("./services/redis");
 const {pg} = require("./services/pg");
-
-
-const config = require('config');
+const seqClient = require('./services/sequelizeClient');
+const {seqPG} = require("./services/sequelize");
+const {axios} = require("./services/axios");
 
 const userController = require("./controllers/user");
 const lectureController = require("./controllers/lecture");
@@ -43,6 +47,8 @@ app.use('/user', userRouter)
 app.use('/auth', authRouter)
 app.use('/redis', redisRouter)
 app.use('/pg', pgRouter)
+app.use('/seq', seqRouter)
+app.use('/axios', axiosRouter)
 
 async function allServicesAreRunning() {
     try {
@@ -59,6 +65,16 @@ async function allServicesAreRunning() {
         // Check Postgres connection
         if (!pg.isEnable()) {
             return "Postgres is not connected";
+        }
+
+        // Check Sequelize connection
+        if (!seqPG.isEnable()) {
+            return "Sequelize is not connected";
+        }
+
+        // Check Axios connection
+        if (!axios.isEnable()) {
+            return "Axios is not ready";
         }
 
         return true;
@@ -123,6 +139,8 @@ app.listen(appPort, async () => {
         console.log(await pg.connect());
         console.log(await redis.connect());
         console.log(await dbInstance.connect());
+        console.log(await seqPG.connect());
+        console.log(await axios.connect());
 
         const result = await allServicesAreRunning();
         if (result === true) {
@@ -131,27 +149,6 @@ app.listen(appPort, async () => {
             console.log(await lectureController.insertLecturesBulkData("lectures", 2000));
             console.log(await userController.insertUsersBulkData("users", 2000));
             console.log(await userController.addAdminUser());
-
-            // const createTable = `
-            //     create table if not exists test (
-            //         id serial primary key not null,
-            //         name varchar(50) not null,
-            //         price decimal(5,2),
-            //         link varchar(100)
-            //     );
-            // `;
-            // console.log(await pg.execQuery(createTable));
-
-            // const query = `
-            //     insert into test (name, price, link) 
-            //     VALUES
-            //         ('table', 50.0, 'www.table.com'),
-            //         ('chair', 35.80, 'www.chair.com'),
-            //         ('window', 270.0, 'www.window.com'),
-            //         ('sofa', 650.35, 'www.sofa.com')
-            //     ;
-            // `;
-            // console.log(await pg.execQuery(query));
 
             // await runUnitTest();
         }
